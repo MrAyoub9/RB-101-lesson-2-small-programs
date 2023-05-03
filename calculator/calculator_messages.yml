@@ -1,0 +1,6 @@
+welcome: "Welcome to Calculator! Enter your name:"
+valid_name: "Make sure to use a valid name."
+get_operator: "Select an operation to perform:\n 1 to add\n 2 to multiply\n 3 to divide\n 4 to subtract"
+invalid_operator: "Invalid operator! Choose a number between 1 and 4"
+start_over: "Do you want to perform another calculation? (y/n)"
+invalid_number: "Invalid number!"
