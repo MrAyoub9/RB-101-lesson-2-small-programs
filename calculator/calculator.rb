@@ -8,20 +8,18 @@ end
 # Removes all zeros that are located at the beginning of the string
 def adjust_string(num)
   counter = 0
-  
   if num.include?(".")
     d_point = num.index(".")
-   if num.to_i == 0
-     num = "0" + num.slice(d_point..num.size)
-   end
+    if num.to_i == 0
+      num = "0" + num.slice(d_point..num.size)
+    end
   else
     while counter < num.size
-      break if (num[counter].to_i > 0)
+      break if num[counter].to_i > 0
       num.delete!(num[counter])
     end
   end
-
-  return num == "" ? "0" : num  # returns 0 if all string's characters were removed.
+  num == "" ? "0" : num
 end
 
 def integer?(num)
@@ -29,12 +27,9 @@ def integer?(num)
 end
 
 def float?(num)
-  # extract the elements of the string and convert them to integer, then to string
-  array_num = num.split("").map { |n| n.to_i.to_s if n != "."}
-  # Creates an array containing all elements of string.
-  array_string = num.split("").map { |n| n if n != "."}
-  # Compare both arrays for equality
-  return array_num == array_string  
+  array_num = num.split("").map { |n| n.to_i.to_s if n != "." }
+  array_string = num.split("").map { |n| n if n != "." }
+  array_num == array_string
 end
 
 def valid_number?(num)
@@ -43,46 +38,45 @@ def valid_number?(num)
 end
 
 def operation_to_message(op)
-  result = case op
+  result =  case op
             when '1' then "Adding"
             when '2' then "Multiplying"
             when '3' then "Dividing"
             else "subtracting"
             end
-  return result
+  result
 end
 
 def calculate(op, num1, num2)
-  result = case op
+  result =  case op
             when '1' then num1 + num2
             when '2' then num1 * num2
             when '3' then num1 / num2
             else num1 - num2
             end
-  return result
+  result
 end
 
 def get_number(num, order)
   loop do
     prompt "Enter the #{order} number"
-    num= gets.chomp
+    num = gets.chomp
 
     break if valid_number?(num)
     prompt MESSAGES['invalid_number']
   end
 
-  return num
+  num
 end
 
 prompt(MESSAGES['welcome'])
-
 name = ''
 
 loop do
   name = gets.chomp
 
   break if !name.empty?
-  puts MESSAGES['valid_name'] 
+  puts MESSAGES['valid_name']
 end
 
 prompt("Hi #{name}")
