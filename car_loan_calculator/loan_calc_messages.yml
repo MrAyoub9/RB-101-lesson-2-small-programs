@@ -1,0 +1,7 @@
+welcome: "Welcome to the loan calculator!"
+name: "Please, enter your name:"
+valid_name: "The entered name include numbers or special character...\n =>Please, enter a valid name"
+valid_number: "Please, enter a valid number - must be >= 0"
+loan_amount: "Enter the loan amount:"
+interest_rate: "Enter the interest rate:"
+duration: "Enter loan duration in years: (max = 30y)"
