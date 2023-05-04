@@ -29,13 +29,26 @@ end
 def float?(num)
   array_num = num.split("").map { |n| n.to_i.to_s if n != "." }
   array_string = num.split("").map { |n| n if n != "." }
+  return false if array_num.count(nil) > 1
   array_num == array_string
 end
 
 def valid_number?(num)
+  arr = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."]
+  counter = 0
+  while counter < num.size
+    return false if !arr.include?(num[counter])
+    counter += 1
+  end
   num = adjust_string(num) if num.size > 1
   float?(num) || integer?(num)
 end
+
+# def valid_number?(num)
+#   num = adjust_string(num) if num.size > 1
+#   p num
+#   float?(num) || integer?(num)
+# end
 
 def operation_to_message(op)
   result =  case op
