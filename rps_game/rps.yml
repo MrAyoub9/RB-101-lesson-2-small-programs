@@ -1,0 +1,8 @@
+answer: 'Would you like to play another round?'
+win_limit: "Set a limit of wins -> enter an integer > 0:"
+invalid_limit: "Invalid number. must be an integer > 0 "
+invalid_answer: 'Incorrect entry. choose yes or no:'
+welcome: "Welcome to the Rock Paper Scissors Game"
+name: "Please, enter your name:"
+invalid_name: "Invalid name. Please, enter a valid name:"
+
