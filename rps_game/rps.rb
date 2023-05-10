@@ -9,11 +9,13 @@ SPOCK = 'SP'
 
 CHOICES = [ROCK, PAPER, SCISSORS, LIZARD, SPOCK]
 
-POSSIBLE_CHOICES = [[PAPER, ROCK], [SCISSORS, PAPER],
-                    [ROCK, SCISSORS], [ROCK, LIZARD],
-                    [SCISSORS, LIZARD], [LIZARD, PAPER],
-                    [LIZARD, SPOCK], [SPOCK, SCISSORS],
-                    [PAPER, SPOCK], [SPOCK, ROCK]]
+POSSIBLE_CHOICES = {
+  PAPER => [ROCK, SPOCK],
+  SCISSORS => [PAPER, LIZARD],
+  ROCK => [SCISSORS, LIZARD],
+  LIZARD => [PAPER, SPOCK],
+  SPOCK => [SCISSORS, ROCK]
+}
 
 PROMPT = <<-STR
   ==> Please, select:
@@ -24,20 +26,7 @@ PROMPT = <<-STR
     => SP for spock
 STR
 
-def valid_answer
-  puts MESSAGES['answer']
-  answer = gets.chomp.downcase
-  answer_arr = %w[yes no y n]
-
-  until answer_arr.include?(answer)
-    puts MESSAGES['invalid_answer']
-    answer = gets.chomp.downcase.strip
-  end
-
-  answer
-end
-
-def valid_name
+def prompt_name
   puts MESSAGES['name']
   name = gets.chomp
   until name.match?(/^[a-zA-Z]+$/)
@@ -50,48 +39,50 @@ end
 def prompt_choice
   player_choice = gets.chomp.upcase
   until CHOICES.include?(player_choice)
-    puts "Invalid answer. %{player_choice} is not an option"
+    puts "Invalid answer. #{player_choice} is not an option"
     puts PROMPT
     player_choice = gets.chomp.upcase
   end
   player_choice
 end
 
+def prompt_answer
+  puts MESSAGES['answer']
+  answer = gets.chomp.downcase
+  answer_arr = %w[yes no y n]
+
+  until answer_arr.include?(answer)
+    puts MESSAGES['invalid_answer']
+    answer = gets.chomp.downcase.strip
+  end
+  answer
+end
+
 def get_winner(points)
-  winner =  if points == [0, 0]
-              'NO WINNER'
-            elsif points == [1, 0]
-              'YOU WON'
-            else
-              'COMPUTER WON'
-            end
+  winner = if points == [0, 0]
+             'NO WINNER'
+           elsif points == [1, 0]
+             'YOU WON'
+           else
+             'COMPUTER WON'
+           end
   winner
 end
 
 def calculate_points(choice1, choice2)
   points = 0
-  counter = 0
-  while counter < POSSIBLE_CHOICES.size
-    if POSSIBLE_CHOICES[counter] == [choice1, choice2]
-      points += 1
-      break
-    end
-    counter += 1
+  if choice1 == choice2
+    points += 0
+  elsif POSSIBLE_CHOICES[choice1].include?(choice2)
+    points += 1
   end
   points
 end
 
-def add_points(player_choice, computer_choice)
-  player_points = calculate_points(player_choice, computer_choice)
-  computer_points = calculate_points(computer_choice, player_choice)
-  [player_points, computer_points]
-end
-
 def store_points(player_choice, computer_choice, player, computer)
-  points = add_points(player_choice, computer_choice)
-  player << points[0]
-  computer << points[1]
-  points
+  player << calculate_points(player_choice, computer_choice)
+  computer << calculate_points(computer_choice, player_choice)
+  [player.last, computer.last]
 end
 
 def final_results(name, player, computer)
@@ -115,13 +106,23 @@ def print_report(name, player, computer)
     puts "____________________________"
     counter += 1
   end
+  puts "Thank you for playing. hope you enjoyed the game!"
 end
 
-def exit_game(wins_limit, player, computer)
-  wins_limit == player.sum || wins_limit == computer.sum
+def exit_game(name, wins_limit, player, computer, answer)
+  if wins_limit == player.sum || wins_limit == computer.sum
+    system 'clear'
+    puts final_results(name, player, computer)
+    print_report(name, player, computer)
+    answer << prompt_answer
+  end
 end
 
-def valid_number(num)
+def game_over
+  true
+end
+
+def valid_number?(num)
   return false if num.to_i <= 0
   num.match?(/\A\d+\Z/)
 end
@@ -129,22 +130,27 @@ end
 def prompt_number
   puts MESSAGES['win_limit']
   limit = gets.chomp
-  until valid_number(limit)
+  until valid_number?(limit)
     puts MESSAGES['invalid_limit']
     limit = gets.chomp
   end
   limit
 end
 
-def current_result(player, computer)
+def current_result(player, computer, player_choice, computer_choice, winner)
   puts "Player = #{player.sum}  |  Computer = #{computer.sum}"
+  puts "entry = #{player_choice}  |  entry = #{computer_choice}"
+  puts "===> #{winner} <==="
 end
 
 puts MESSAGES['welcome']
-name = valid_name
+name = prompt_name
 
 player = []
 computer = []
+player_choice = ''
+computer_choice = ''
+winner = ''
 
 wins = prompt_number
 
@@ -152,23 +158,21 @@ loop do
   system 'clear'
 
   puts "Hello, #{name}."
-  current_result(player, computer)
+  current_result(player, computer, player_choice, computer_choice, winner)
 
   puts PROMPT
   player_choice = prompt_choice
   computer_choice = CHOICES.sample
-
-  puts "=> Computer entry = #{computer_choice}"
-  puts "=> Player entry = #{player_choice}"
-
   results = store_points(player_choice, computer_choice, player, computer)
   winner = get_winner(results)
-  puts "===> #{winner} <==="
 
-  answer = valid_answer
-  break if answer.include?('n') || exit_game(wins.to_i, player, computer)
+  answer = ''
+  exit_game(name, wins.to_i, player, computer, answer)
+  if answer.include?("y")
+    player = []
+    computer = []
+    wins = prompt_number
+  elsif answer.include?("n")
+    break
+  end
 end
-
-system 'clear'
-puts final_results(name, player, computer)
-print_report(name, player, computer)
