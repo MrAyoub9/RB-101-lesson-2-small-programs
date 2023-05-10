@@ -89,10 +89,9 @@ end
 
 def store_points(player_choice, computer_choice, player, computer)
   points = add_points(player_choice, computer_choice)
-  winner = get_winner(points)
   player << points[0]
   computer << points[1]
-  [winner, points]
+  points
 end
 
 def final_results(name, player, computer)
@@ -163,7 +162,7 @@ loop do
   puts "=> Player entry = #{player_choice}"
 
   results = store_points(player_choice, computer_choice, player, computer)
-  winner = results[0]
+  winner = get_winner(results)
   puts "===> #{winner} <==="
 
   answer = valid_answer
